@@ -1,0 +1,35 @@
+version: '3'
+services:
+  db:
+    image: mysql:5.7.22
+    container_name: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USERNAME=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    ports:
+      - 3306:3306
+    volumes:
+      - ./data/db:/var/lib/mysql
+
+  flask-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: flask-app
+    environment:
+      - FLASK_APP=src/app.py
+      - FLASK_ENV=development
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USERNAME=${MYSQL_USERNAME}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+    depends_on:
+      - db
+    ports:
+      - 5000:5000
+    volumes:
+      - .:/app
+    command: >
+      bash -c "flask db upgrade --directory src/migrations && flask run --host=0.0.0.0"
