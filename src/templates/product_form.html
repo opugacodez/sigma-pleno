@@ -13,9 +13,14 @@
             <input type="text" id="productDescription" name="description" placeholder="Descrição" value="{{ product.description if product else '' }}">
         </div>
         <div class="input-field">
-            <label for="productAmount">Valor</label>
-            <input type="text" id="productAmount" name="amount" placeholder="Valor" 
-                   value="{{ product.amount if product and product.amount is not none else '' }}" required>
+            <label for="productPrice">Valor</label>
+            <input type="text" id="productPrice" name="price" placeholder="Valor" 
+                   value="{{ product.price if product and product.price is not none else '' }}" required>
+        </div>
+        <div class="input-field">
+            <label for="productQuantity">Quantidade</label>
+            <input type="number" id="productQuantity" name="quantity" placeholder="Quantidade" 
+                   value="{{ cashflow.quantity if cashflow else '' }}" required>
         </div>
         <button type="submit" class="waves-effect waves-light btn">{% if product %}Atualizar{% else %}Adicionar{% endif %}</button>
     </form>
@@ -25,13 +30,13 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
 <script>
     $(document).ready(function(){
-        $('#productAmount').mask('000.000.000.000.000,00', {reverse: true});
+        $('#productPrice').mask('000.000.000.000.000,00', {reverse: true});
     });
 
     function removeMask() {
-        var amountField = $('#productAmount');
-        var amountValue = amountField.val().replace(/\./g, '').replace(',', '.');
-        amountField.val(amountValue);
+        var priceField = $('#productPrice');
+        var priceValue = priceField.val().replace(/\./g, '').replace(',', '.');
+        priceField.val(priceValue);
     }
 </script>
 

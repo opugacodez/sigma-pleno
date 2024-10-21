@@ -4,6 +4,8 @@ from src.config.env import env
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
 from src.service.product_service import ProductService
+from src.service.cash_flow_service import CashFlowService
+from pprint import pprint
 
 
 def create_app():
@@ -29,12 +31,19 @@ def create_app():
     @app.route('/products', methods=['GET'])
     def product_list():
         products = ProductService.list_products()[0]
-        return render_template('product_list.html', products=products)
+        cashflows = CashFlowService.retrieve_cash_flows()
+        return render_template('product_list.html', products=products, cashflows=cashflows)
 
     @app.route('/products/new', methods=['GET', 'POST'])
     def add_product():
         if request.method == 'POST':
-            ProductService.add_product(request.form)
+            product_data = {
+                'name': request.form['name'],
+                'description': request.form['description'],
+                'quantity': request.form['quantity'],
+                'price': request.form['price']
+            }
+            ProductService.add_product(product_data)
             flash('Produto adicionado com sucesso!')
             return redirect(url_for('product_list'))
         return render_template('product_form.html')
@@ -48,11 +57,13 @@ def create_app():
     @app.route('/products/<int:id>/edit', methods=['GET', 'POST'])
     def edit_product(id):
         product = ProductService.get_product(id)[0]
+        cashflow = CashFlowService.retrieve_cash_flow_by_product_id(id)
+        pprint(cashflow)
         if request.method == 'POST':
-            product, status_code = ProductService.modify_product(id, request.form)
+            ProductService.modify_product(id, request.form)
             flash('Produto atualizado com sucesso!')
             return redirect(url_for('product_list'))
-        return render_template('product_form.html', product=product)
+        return render_template('product_form.html', product=product, cashflow=cashflow)
 
     return app
 
